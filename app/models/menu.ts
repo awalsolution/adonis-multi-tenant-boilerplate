@@ -35,6 +35,7 @@ export default class Menu extends BaseModel {
     autoUpdate: true,
     serialize: (value) => value?.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY),
   })
+  // @no-swagger
   declare updatedAt: DateTime
 
   @hasMany(() => Permission)
