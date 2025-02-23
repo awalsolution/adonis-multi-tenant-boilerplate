@@ -8,16 +8,16 @@ export default class MenuController extends BaseController {
     let DQ = Menu.query()
 
     const page = request.input('page')
-    const perPage = request.input('perPage')
+    const limit = request.input('limit')
 
     if (request.input('name')) {
       DQ = DQ.whereILike('name', request.input('name') + '%')
     }
 
-    if (perPage) {
+    if (limit) {
       return response.ok({
         code: 200,
-        data: await DQ.preload('permissions').orderBy('created_at', 'desc').paginate(page, perPage),
+        data: await DQ.preload('permissions').orderBy('created_at', 'desc').paginate(page, limit),
         message: 'Record find successfully!',
       })
     } else {
