@@ -42,34 +42,26 @@ export default class AuthController extends BaseController {
   }
 
   async login({ request, response }: HttpContext) {
-    try {
-      const { email, password } = request.only(['email', 'password'])
-      const dq = await User.findBy('email', email)
-      if (dq && !dq.is_email_verified) {
-        return response.ok({
-          code: 200,
-          message: 'Pleae verify your email first!',
-          data: null,
-        })
-      }
-
-      const user = await User.verifyCredentials(email, password)
-      const token = await User.accessTokens.create(user, ['*'], {
-        name: 'login_token',
-      })
-
+    const { email, password } = request.only(['email', 'password'])
+    const dq = await User.findBy('email', email)
+    if (dq && !dq.is_email_verified) {
       return response.ok({
-        code: 200,
-        message: 'Login successfully!',
-        data: token,
-      })
-    } catch (e) {
-      console.log(e)
-      return response.internalServerError({
-        code: 500,
-        message: e.toString(),
+        code:200,
+        message: 'Pleae verify your email first!',
+        data: null,
       })
     }
+
+    const user = await User.verifyCredentials(email, password)
+    const token = await User.accessTokens.create(user, ['*'], {
+      name: 'login_token',
+    })
+
+    return response.ok({
+      code:200,
+      message: 'Login successfully!',
+      data: token,
+    })
   }
 
   async authenticated({ auth, response }: HttpContext) {
