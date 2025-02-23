@@ -17,16 +17,16 @@ export default class TenantController extends BaseController {
     let DQ = Tenant.query()
 
     const page = request.input('page')
-    const perPage = request.input('perPage')
+    const limit = request.input('limit')
 
     if (request.input('name')) {
       DQ = DQ.whereILike('name', request.input('name') + '%')
     }
 
-    if (perPage) {
+    if (limit) {
       return response.ok({
         code: 200,
-        data: await DQ.preload('plan').orderBy('created_at', 'desc').paginate(page, perPage),
+        data: await DQ.preload('plan').orderBy('created_at', 'desc').paginate(page, limit),
         message: 'Record find successfully!',
       })
     } else {

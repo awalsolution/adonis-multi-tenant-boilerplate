@@ -10,7 +10,7 @@ export default class UserController extends BaseController {
       let DQ = User.query().whereNotIn('id', [currentUser.id, 1])
 
       const page = request.input('page')
-      const perPage = request.input('perPage')
+      const limit = request.input('limit')
 
       if (request.input('email')) {
         DQ = DQ.whereILike('email', request.input('email') + '%')
@@ -29,7 +29,7 @@ export default class UserController extends BaseController {
         })
       }
 
-      if (perPage) {
+      if (limit) {
         return response.ok({
           code: 200,
           data: await DQ.preload('permissions')
@@ -37,7 +37,7 @@ export default class UserController extends BaseController {
               PQ.preload('permissions')
             })
             .orderBy('created_at', 'desc')
-            .paginate(page, perPage),
+            .paginate(page, limit),
           message: 'Record find successfully!',
         })
       } else {

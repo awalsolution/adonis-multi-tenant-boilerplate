@@ -8,7 +8,7 @@ export default class PermissionController {
       let DQ = Permission.query()
 
       const page = request.input('page')
-      const perPage = request.input('perPage')
+      const limit = request.input('limit')
 
       // name filter
       if (request.input('name')) {
@@ -19,10 +19,10 @@ export default class PermissionController {
         DQ = DQ.whereILike('type', request.input('type') + '%')
       }
 
-      if (perPage) {
+      if (limit) {
         return response.ok({
           code: 200,
-          data: await DQ.orderBy('created_at', 'desc').preload('menus').paginate(page, perPage),
+          data: await DQ.orderBy('created_at', 'desc').preload('menus').paginate(page, limit),
           message: 'Record find successfully!',
         })
       } else {
