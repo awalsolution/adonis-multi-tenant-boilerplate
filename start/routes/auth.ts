@@ -6,6 +6,8 @@ router
   .group(() => {
     router.post('/login', [AuthController, 'login'])
     router.post('/register', [AuthController, 'register'])
+    router.post('/tenant-register', [AuthController, 'tenantRegister'])
+    router.get('/verify-domain/:name', [AuthController, 'verifyDomainName'])
     router
       .group(() => {
         router.get('/logout', [AuthController, 'logout'])

@@ -1,10 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { cuid } from '@adonisjs/core/helpers'
+import hash from '@adonisjs/core/services/hash'
 import { BaseController } from '#controllers/base_controller'
-import User from '#models/user'
-import Tenant from '#models/tenant'
 import logger from '@adonisjs/core/services/logger'
 import db from '@adonisjs/lucid/services/db'
+import mail from '@adonisjs/mail/services/main'
+import User from '#models/user'
+import Tenant from '#models/tenant'
 
 export default class AuthController extends BaseController {
   async register({ request, response }: HttpContext) {
@@ -46,7 +48,7 @@ export default class AuthController extends BaseController {
     const dq = await User.findBy('email', email)
     if (dq && !dq.is_email_verified) {
       return response.ok({
-        code:200,
+        code: 200,
         message: 'Pleae verify your email first!',
         data: null,
       })
@@ -57,8 +59,14 @@ export default class AuthController extends BaseController {
       name: 'login_token',
     })
 
+    await mail.send((message) => {
+      message
+        .to(user.email)
+        .subject('Login Successfully!')
+    })
+
     return response.ok({
-      code:200,
+      code: 200,
       message: 'Login successfully!',
       data: token,
     })
@@ -84,6 +92,39 @@ export default class AuthController extends BaseController {
     return response.ok({
       code: 200,
       message: 'Logout successfully!',
+    })
+  }
+
+  // forget password
+
+
+  // change password
+  async changePassword({ request, response }: HttpContext) {
+    const { old_password, password } = request.only(['old_password', 'password'])
+    const user = await User.find(request.param('user_id'))
+
+    if (!user) {
+      return response.badRequest({ message: 'User not found' })
+    }
+
+    const isSame = await hash.verify(user.password, old_password)
+    if (!isSame) {
+      return response.badRequest({ message: 'Old password is incorrect' })
+    }
+
+    user.password = await hash.make(password)
+    await user.save()
+
+    await mail.send((message) => {
+      message
+        .to(user.email)
+        .subject('Password Changed Successfully!')
+    })
+
+    return response.ok({
+      code: 200,
+      message: 'Password Change successfully!',
+      data: null,
     })
   }
 

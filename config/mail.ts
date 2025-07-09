@@ -9,6 +9,12 @@ const mailConfig = defineConfig({
    * each using a different transport or same transport with different
    * options.
    */
+
+  from: {
+    address: 'iqbal.it.dev@gmail.com',
+    name: 'Iqbal Hassan',
+  },
+
   mailers: {
     smtp: transports.smtp({
       host: env.get('SMTP_HOST'),
@@ -29,5 +35,5 @@ const mailConfig = defineConfig({
 export default mailConfig
 
 declare module '@adonisjs/mail/types' {
-  export interface MailersList extends InferMailers<typeof mailConfig> {}
+  export interface MailersList extends InferMailers<typeof mailConfig> { }
 }
